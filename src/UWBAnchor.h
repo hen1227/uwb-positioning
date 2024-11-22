@@ -15,6 +15,7 @@ public:
     void update();
     float readDistance();
     float getAverageDistance(int numSamples);
+    void sendSerialData(String data);
 
 private:
     SoftwareSerial *serial;

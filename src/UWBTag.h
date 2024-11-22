@@ -12,7 +12,7 @@
 class UWBTag {
 public:
     UWBTag(int rxPin, int txPin);
-    void initialize();
+    void initialize(int address);
     void update();
 
 private:

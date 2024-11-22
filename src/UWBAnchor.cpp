@@ -27,6 +27,15 @@ void UWBAnchor::initialize() {
         delay(500);
     }
 
+    sendSerialData("AT+MODE=1"); //set anchor
+    delay(500);
+
+    sendSerialData("AT+NETWORKID=NULUNABOTICS"); //set network id
+    delay(500);
+
+    sendSerialData("AT+ADDRESS=NULANCHOR"); //set address
+    delay(500);
+
     sendATCommand("AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n");
     delay(500);
     Serial.println("Reading...");
@@ -71,6 +80,10 @@ float UWBAnchor::getAverageDistance(int numSamples) {
 
 void UWBAnchor::sendATCommand(const char *command) {
     serial->write(command);
+}
+
+void UWBAnchor::sendSerialData(String data) {
+    serial->println(data);
 }
 
 float UWBAnchor::parseDistance(String data) {
