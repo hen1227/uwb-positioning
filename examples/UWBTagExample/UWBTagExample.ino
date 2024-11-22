@@ -6,7 +6,7 @@ UWBTag tag(13, 15);
 void setup() {
     Serial.begin(115200);
     Serial.println("Initializing Tag...");
-    tag.initialize();
+    tag.initialize(1);
 }
 
 void loop() {
