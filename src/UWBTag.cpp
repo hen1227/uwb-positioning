@@ -31,10 +31,10 @@ void UWBTag::initialize(int address) {
     sendATCommand("AT+MODE=0"); //set tag
     delay(500);
 
-    sendSerialData("AT+NETWORKID=NULUNABOTICS"); //set network id
+    sendATCommand("AT+NETWORKID=NULUNABOTICS"); //set network id
     delay(500);
 
-    sendSerialData("AT+ADDRESS=NUL" + std::to_string(address)); //set address
+    sendATCommand(("AT+ADDRESS=NUL" + std::to_string(address)).c_str()); // Set address
     delay(500);
 
     sendATCommand("AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n");
