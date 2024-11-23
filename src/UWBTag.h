@@ -1,23 +1,25 @@
-//
-// Created by Henry Abrahamsen on 11/20/24.
-//
+#ifndef UWB_TAG_H
+#define UWB_TAG_H
 
-#ifndef UWBPOSITIONING_UWB_TAG_H
-#define UWBPOSITIONING_UWB_TAG_H
+#include "UWBDevice.h"
+#include "UWBAnchor.h"
+#include <vector>
 
-
-#include <Arduino.h>
-#include <SoftwareSerial.h>
-
-class UWBTag {
+class UWBTag : public UWBDevice {
 public:
-    UWBTag(int rxPin, int txPin);
-    void initialize(int address);
-    void update();
+    UWBTag(int rxPin, int txPin, const String &address);
+    void initialize();
+    void addAnchor(UWBAnchor *anchor);
+    void updateDistances();
+    float getDistanceToAnchor(const String &anchorAddress);
+    float getAverageDistanceToAnchor(const String &anchorAddress, int numSamples);
+    void calculate2DPosition(float &x, float &y, float errorMargin = 0.1);
+    void calculate3DPosition(float &x, float &y, float &z, float errorMargin = 0.1);
 
 private:
-    SoftwareSerial *serial;
-    void sendATCommand(const char *command);
+    String address;
+    std::vector<UWBAnchor *> anchors;
+    std::map<String, float> anchorDistances;
 };
 
-#endif //UWBPOSITIONING_UWB_TAG_H
+#endif // UWB_TAG_H

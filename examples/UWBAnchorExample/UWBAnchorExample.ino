@@ -1,24 +1,23 @@
-#include <Arduino.h>
-#include "UWBAnchor.h"
+/*
+   UWBAnchor2DExample.ino
+   Henry Abrahamsen
+   11/22/24
+   Example implementation of UWBPositioning Anchor in 2D
+   No documentation available at this time
+*/
 
-UWBAnchor anchor(13, 15);
+#include "UWBPositioning.h"
+
+UWBAnchor anchor1(2, 3, "ANCHOR001", 0, 0);   // 2D: (0, 0)
+UWBAnchor anchor2(4, 5, "ANCHOR002", 5, 0);   // 2D: (5, 0)
 
 void setup() {
-    Serial.begin(115200);
-    Serial.println("Initializing Anchor...");
-    anchor.initialize();
+    Serial.begin(9600);
+    anchor1.initialize();
+    anchor2.initialize();
 }
 
 void loop() {
-    anchor.update();
-
-    float distance = anchor.readDistance();
-    Serial.print("Current Distance: ");
-    Serial.println(distance);
-
-    float avgDistance = anchor.getAverageDistance(10);
-    Serial.print("Average Distance (last 10 samples): ");
-    Serial.println(avgDistance);
-
-    delay(1000);
+    anchor1.update();
+    anchor2.update();
 }

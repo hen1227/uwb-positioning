@@ -1,28 +1,32 @@
 //
-// Created by Henry Abrahamsen on 11/20/24.
+// Created by Henry Abrahamsen on 11/22/24.
+// UWBAnchor.h
 //
 
-#ifndef UWBPOSITIONING_UWB_ANCHOR_H
-#define UWBPOSITIONING_UWB_ANCHOR_H
 
-#include <Arduino.h>
-#include <SoftwareSerial.h>
+#ifndef UWB_ANCHOR_H
+#define UWB_ANCHOR_H
 
-class UWBAnchor {
+#include "UWBDevice.h"
+
+class UWBAnchor : public UWBDevice {
 public:
-    UWBAnchor(int rxPin, int txPin);
-    void initialize();
-    void update();
+    UWBAnchor(int rxPin, int txPin, const String &address, float x, float y, float z = 0);
+    void initialize() override;
+    const String &getAddress() const;
+    float getX() const;
+    float getY() const;
+    float getZ() const;
     float readDistance();
     float getAverageDistance(int numSamples);
-    void sendSerialData(String data);
 
 private:
-    SoftwareSerial *serial;
-    void sendATCommand(const char *command);
-    float distances[50]; // Stores up to 50 distance samples
+    String address;
+    float x, y, z; // Position
+    float distances[50];
     int distanceIndex;
-    float parseDistance(String data);
+    float parseDistance(const String &response);
 };
 
-#endif //UWBPOSITIONING_UWB_ANCHOR_H
+
+#endif // UWB_ANCHOR_H

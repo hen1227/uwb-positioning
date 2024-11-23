@@ -1,97 +1,44 @@
 //
 // Created by Henry Abrahamsen on 11/20/24.
+// UWBAnchor.cpp
 //
 
 #include "UWBAnchor.h"
 
-UWBAnchor::UWBAnchor(int rxPin, int txPin) {
-    serial = new SoftwareSerial(rxPin, txPin);
-    distanceIndex = 0;
+UWBAnchor::UWBAnchor(int rxPin, int txPin, const String &address, float x, float y, float z)
+        : UWBDevice(rxPin, txPin), address(address), x(x), y(y), z(z), distanceIndex(0) {
     memset(distances, 0, sizeof(distances));
 }
 
+float UWBAnchor::getX() const { return x; }
+float UWBAnchor::getY() const { return y; }
+float UWBAnchor::getZ() const { return z; }
+
+
 void UWBAnchor::initialize() {
-    serial->begin(9600);
-    delay(500);
-
-    bool ok = false;
-    while (!ok) {
-        sendATCommand("AT\r\n");
-        while (serial->available()) {
-            char c = serial->read();
-            Serial.print(c);
-            if (c == 'O') { // Assuming 'OK' is returned
-                ok = true;
-            }
-        }
-        delay(500);
-    }
-
-    sendSerialData("AT+MODE=1"); //set anchor
-    delay(500);
-
-    sendSerialData("AT+NETWORKID=NULUNABOTICS"); //set network id
-    delay(500);
-
-    sendSerialData("AT+ADDRESS=NULANCHOR"); //set address
-    delay(500);
-
-    sendATCommand("AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n");
-    delay(500);
-    Serial.println("Reading...");
-    while (serial->available()) {
-        Serial.print(char(serial->read()));
-    }
+    UWBDevice::initialize();
+    sendATCommand(("AT+MODE=1\r\n").c_str()); // Set to ANCHOR
+    sendATCommand(("AT+ADDRESS=" + address + "\r\n").c_str());
 }
 
-void UWBAnchor::update() {
-    delay(500);
-    Serial.println("Reading...");
-    while (serial->available()) {
-        String data = serial->readStringUntil('\n');
-        Serial.println(data);
-        float distance = parseDistance(data);
-        if (!isnan(distance)) {
-            distances[distanceIndex] = distance;
-            distanceIndex = (distanceIndex + 1) % 50; // Circular buffer
-        }
-    }
+const String &UWBAnchor::getAddress() const {
+    return address;
 }
 
 float UWBAnchor::readDistance() {
-    int idx = (distanceIndex - 1 + 50) % 50;
-    return distances[idx];
+    // Example of getting distance (can be triggered by TAG)
+    String response = readResponse();
+    return parseDistance(response);
 }
 
-float UWBAnchor::getAverageDistance(int numSamples) {
-    if (numSamples > 50) numSamples = 50;
-    float sum = 0;
-    int count = 0;
-    for (int i = 0; i < numSamples; i++) {
-        int idx = (distanceIndex - 1 - i + 50) % 50;
-        if (!isnan(distances[idx])) {
-            sum += distances[idx];
-            count++;
-        }
-    }
-    if (count == 0) return NAN;
-    return sum / count;
-}
-
-void UWBAnchor::sendATCommand(const char *command) {
-    serial->write(command);
-}
-
-void UWBAnchor::sendSerialData(String data) {
-    serial->println(data);
-}
-
-float UWBAnchor::parseDistance(String data) {
-    int idx = data.indexOf("DIST:");
+float UWBAnchor::parseDistance(const String &response) {
+    int idx = response.indexOf("DIST:");
     if (idx != -1) {
-        String distanceStr = data.substring(idx + 5);
-        distanceStr.trim();
-        return distanceStr.toFloat();
+        String distStr = response.substring(idx + 5);
+        distStr.trim();
+        return distStr.toFloat();
     }
     return NAN;
 }
+
+

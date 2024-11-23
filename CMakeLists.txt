@@ -8,4 +8,6 @@ add_library(UWBPositioning STATIC
         "src/UWBAnchor.cpp"
         src/UWBAnchor.h
         src/UWBTag.h
-        src/UWBTag.cpp)
+        src/UWBTag.cpp
+        src/UWBDevice.h
+        src/UWBDevice.cpp)
