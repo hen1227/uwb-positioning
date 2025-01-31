@@ -3,7 +3,6 @@
 // UWBDevice.h
 //
 
-
 #ifndef UWB_DEVICE_H
 #define UWB_DEVICE_H
 
@@ -12,7 +11,7 @@
 
 class UWBDevice {
 public:
-    UWBDevice(int rxPin, int txPin, float x, float y, float z = 0); // Default z = 0 for 2D mode
+    UWBDevice(int rxPin, int txPin, float x, float y, float z = 0); // Default z=0 for 2D mode
     virtual ~UWBDevice();
 
     void initialize();
@@ -22,11 +21,11 @@ public:
     bool is3D() const;
 
 protected:
-    SoftwareSerial *serial;
+    SoftwareSerial *serial; // Protected so derived classes can access
     float x, y, z;
+
     void sendATCommand(const char *command);
     String readResponse();
 };
-
 
 #endif // UWB_DEVICE_H
